@@ -83,46 +83,47 @@ app.get("/api/:id",async (req,res)=>{
 
                    
 
-                    address = await result.getAddress();
+                   let address1 =  result.getAddress();
 
-                    profile = await result.getAvatar();
+                   let profile1 =  result.getAvatar();
 
-                    ipfs = await result.getContentHash();
+                    let ipfs1 =  result.getContentHash();
                  
-                    email =   await result.getText("email");
+                  let  email1 =    result.getText("email");
                                     
-                    website = await result.getText("url");
+                   let website1 =  result.getText("url");
                     
-                    twitter = await result.getText("com.twitter");
+                  let  twitter1 =  result.getText("com.twitter");
                     
-                    discord = await result.getText('com.discord');
+                  let  discord1 =  result.getText('com.discord');
                     
-                    github =   await result.getText('com.github');
+                  let  github1 =    result.getText('com.github');
                     
-                    telegram = await result.getText('org.telegram');
+                 let   telegram1 =  result.getText('org.telegram');
                                     
-                    description = await result.getText('description');
+                  let  description1 =  result.getText('description');
 
-                    reddit = await result.getText('com.reddit');
-                
+                  let  reddit1 =  result.getText('com.reddit');
 
-                    res.json({
+                    Promise.all([address1,profile1,ipfs1,email1,website1,twitter1,discord1,github1,telegram1,description1,reddit1]).then( e=>{
+
+res.json({
                       'Name':ensNameSlice,
-                      'Address':address,
-                    'Email': email,
-                    'Profile': profile,
-                    'Ipfs':ipfs,
-                    'Website': website,
-                    'Twitter': twitter,
-                    'Discord': discord,
-                    'Github':github,
-                    'Telegram': telegram,
-                    'Description':description,
-                    'Reddit': reddit
+                      'Address':e[0],
+                    'Email': e[1],
+                    'Profile': e[2],
+                    'Ipfs':e[3],
+                    'Website': e[4],
+                    'Twitter': e[5],
+                    'Discord': e[6],
+                    'Github':e[7],
+                    'Telegram': e[8],
+                    'Description':e[9],
+                    'Reddit': e[10]
                     })
-      
-      
-                                 
+           }
+ )
+              
                   } else {
 
                     console.log('resolver null')
@@ -172,8 +173,7 @@ app.get("/api/:id",async (req,res)=>{
         console.log(domain, 'resolves to', address)
 
          if(address){
-//  https://resolve.unstoppabledomains.com/metadata/sandy.nft
-                // fetch(`https://resolve.unstoppabledomains.com/domains/${domain}`, {
+
                 fetch(`https://resolve.unstoppabledomains.com/metadata/${domain}`, {
 
                   method: "GET",
