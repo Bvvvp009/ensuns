@@ -48,13 +48,15 @@ app.get("/api/:id",async (req,res)=>{
                   try{
 
                   
-                if(ensNameValue != null && !ensNameValue.includes('.eth')){
+                if(ensNameValue && !ensNameValue.includes('.eth') && ensNameValue.length>42){
 
                   var ens = ensNameValue.slice(5,ensNameValue.length);
 
                   console.log(ens);
 
                   ensNameSlice = await provider.lookupAddress(ens);
+
+                  console.log(ensNameSlice)
 
                   
                 } else {
@@ -228,9 +230,9 @@ app.get("/api/:id",async (req,res)=>{
      })
   
 
- app.listen(process.env.PORT || 3000,()=>{
+ app.listen(process.env.PORT || 3001,()=>{
 
-    console.log('Porrt listening on 3000 port')
+    console.log('Porrt listening on 3001 port')
 
 })
 
