@@ -14,7 +14,15 @@ const resolution = new Resolution();
 
 require('dotenv').config()
 
-const cors = require("cors")
+const cors = require("cors");
+
+const { env } = require('process');
+
+// const  ENS  = require('@ensdomains/ensjs');
+
+// const provider =  new ethers.providers.JsonRpcProvider(process.env.Infura_Id);
+
+// const ENSInstance = new ENS()
 
 
 
@@ -28,7 +36,7 @@ app.use(express.static('public'));
 
 app.use(express.urlencoded({extended:true})) 
 
-const provider =  new ethers.providers.JsonRpcProvider(process.env.Infura_Id);
+
 
 app.get("/", (req,res)=>{
 
@@ -36,11 +44,14 @@ app.get("/", (req,res)=>{
 
   })
 
+
 app.get("/api/:id",async (req,res)=>{
     
                 var ensNameValue = req.url;
 
                 var ensNameSlice;
+
+                console.log(ensNameValue)
 
                 // check if url given is null or is it a address else assaign ensname to go pass througth the .eth store
                 
@@ -48,20 +59,28 @@ app.get("/api/:id",async (req,res)=>{
                   try{
 
                   
-                if(ensNameValue != null && !ensNameValue.includes('.eth')){
+                if(ensNameValue && !ensNameValue.includes('.eth') && ensNameValue.length>42){
 
                   var ens = ensNameValue.slice(5,ensNameValue.length);
 
                   console.log(ens);
+                  
+   
+                  let value = await provider.lookupAddress(ens);
 
-                  ensNameSlice = await provider.lookupAddress(ens);
+                  if(value){
 
+                  value = ensNameSlice;
+
+                  console.log("value:",ensNameSlice);
+
+                  }  
                   
                 } else {
 
                   ensNameSlice = ensNameValue.slice(5,ensNameValue.length);
                
-                console.log(ensNameSlice);
+                  console.log(ensNameSlice);
 
                 }
                 
@@ -81,11 +100,9 @@ app.get("/api/:id",async (req,res)=>{
                 
                   if(result!= null){
 
-                   
-
                    let address1 =  result.getAddress();
 
-                   let profile1 =  result.getAvatar();
+                   let profile =  result.getAvatar();
 
                     let ipfs1 =  result.getContentHash();
                  
@@ -105,8 +122,7 @@ app.get("/api/:id",async (req,res)=>{
 
                   let  reddit1 =  result.getText('com.reddit');
 
-                    Promise.all([address1,profile1,ipfs1,email1,website1,twitter1,discord1,github1,telegram1,description1,reddit1]).then( e=>{
-
+                    Promise.all([address1,email1,profile,ipfs1,website1,twitter1,discord1,github1,telegram1,description1,reddit1]).then( e=>{
 res.json({
                       'Name':ensNameSlice,
                       'Address':e[0],
@@ -149,7 +165,9 @@ res.json({
 
   app.get("/apiuns/:id",async(req,res)=>{
 
-  let _ethValue = req.url.slice(8,req.url.legth);
+  let _ethValue = req.url.slice(8,req.url.length);
+  
+
 
     
   if(_ethValue.includes('.zil')){
@@ -212,16 +230,44 @@ res.json({
       .catch(err=>{res.json({err})});
        
   }
- 
-
-
 
 // for 404 error pages
 
+  });
+
+
+  app.get("/apiresolver/:id",async (req,res)=>{
+
+    let _ethValue = req.url.slice(13,req.url.legth);
+
+    console.log(_ethValue)
+
+    // const ensnames =  await ENSInstance.setProvider(provider);
+
+    // console.log(ensnames);
+
+    if (_ethValue){
+
+  try{ fetch(
+    `https://resolve.unstoppabledomains.com/reverse/${_ethValue}`,
+    {
+      method: 'GET',
+      headers: {
+        Authorization: env.auth
+       }}
+     ).then(e=>e.json()).then(e=> {res.json({e})
+     console.log(e)}
+     
+     )
+    }
+  catch{
+      console.log(err);
+    }}
 
   })
-  
-     app.use((req,res)=>{
+
+
+  app.use((req,res)=>{
 
       res.render('404')
 
