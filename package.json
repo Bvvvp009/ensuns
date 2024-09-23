@@ -1,7 +1,7 @@
 {
   "name": "enssearch",
   "version": "1.0.0",
-  "description": "",
+  "description": "A Chrome plugin for finding ENS and Unstoppble domain names in broswer",
   "main": "chrome.js",
   "scripts": {
     "start": "nodemon chrome.js"
